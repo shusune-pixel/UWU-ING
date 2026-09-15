@@ -1,0 +1,74 @@
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.datasets import make_classification
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import classification_report, confusion_matrix, roc_curve, auc
+
+# 1. Generación de datos sintéticos con desbalance de clases (80% / 20%)
+X, y = make_classification(
+    n_samples=1000, 
+    n_features=5, 
+    n_informative=3, 
+    weights=[0.8, 0.2], 
+    random_state=42
+)
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+# 2. Entrenamiento del modelo
+clf = RandomForestClassifier(random_state=42)
+clf.fit(X_train, y_train)
+
+y_pred = clf.predict(X_test)
+y_probs = clf.predict_proba(X_test)[:, 1]
+
+# 3. Configuración del Dashboard Visual
+sns.set_theme(style="whitegrid")
+fig, axes = plt.subplots(2, 3, figsize=(16, 10))
+
+# Visualización 1: Desbalance de Clases
+sns.countplot(x=y_train, ax=axes[0, 0], palette="viridis")
+axes[0, 0].set_title("1. Desbalance de Clases (Train)")
+axes[0, 0].set_xticklabels(["Clase 0", "Clase 1"])
+
+# Visualización 2: Detección de Outliers (Boxplot)
+df_features = pd.DataFrame(X_train, columns=[f"Var {i+1}" for i in range(5)])
+sns.boxplot(data=df_features, ax=axes[0, 1], palette="Set2")
+axes[0, 1].set_title("2. Detección de Outliers")
+
+# Visualización 3: Matriz de Correlación
+sns.heatmap(df_features.corr(), annot=True, cmap="Blues", fmt=".2f", ax=axes[0, 2])
+axes[0, 2].set_title("3. Correlación entre Variables")
+
+# Visualización 4: Matriz de Confusión
+cm = confusion_matrix(y_test, y_pred)
+sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", ax=axes[1, 0])
+axes[1, 0].set_title("4. Matriz de Confusión")
+axes[1, 0].set_xlabel("Predicción")
+axes[1, 0].set_ylabel("Valor Real")
+
+# Visualización 5: Curva ROC con AUC
+fpr, tpr, _ = roc_curve(y_test, y_probs)
+roc_auc = auc(fpr, tpr)
+axes[1, 1].plot(fpr, tpr, color="darkorange", lw=2, label=f"ROC (AUC = {roc_auc:.2f})")
+axes[1, 1].plot([0, 1], [0, 1], color="navy", linestyle="--")
+axes[1, 1].set_title("5. Curva ROC")
+axes[1, 1].set_xlabel("Tasa de Falsos Positivos")
+axes[1, 2].set_ylabel("Tasa de Verdaderos Positivos")
+axes[1, 1].legend(loc="lower right")
+
+# Visualización 6: Distribución Train vs Test
+sns.kdeplot(X_train[:, 0], label="Train", ax=axes[1, 2], fill=True, alpha=0.3)
+sns.kdeplot(X_test[:, 0], label="Test", ax=axes[1, 2], fill=True, alpha=0.3)
+axes[1, 2].set_title("6. Distribución Train vs Test (Var 1)")
+axes[1, 2].legend()
+
+plt.tight_layout()
+plt.show()
+
+# Reporte numérico complementario
+print("--- Reporte de Clasificación ---")
+print(classification_report(y_test, y_pred))
