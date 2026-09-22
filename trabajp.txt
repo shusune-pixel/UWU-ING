@@ -1,0 +1,37 @@
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+
+RANDOM_STATE = 42
+np.random.seed(RANDOM_STATE)
+N = 2000
+
+estratos = ["estrato1", "estrato2", "estrato3", "estrato4", "estrato5", "estrato6"]
+# factor de valor por m2 aproximado según el estrato
+factor_estrato = {"estrato1": 1.05, "estrato2": 1.10, "estrato3": 1.15,
+                   "estrato4": 1.20, "estrato5": 1.40, "estrato6": 2.00}
+
+estrato = np.random.choice(estratos, N)
+area_terreno = np.round(np.random.gamma(shape=6, scale=12, size=N) + 30, 1)
+antiguedad = np.random.randint(0, 40, N)
+distancia_centro = np.round(np.random.exponential(scale=6, size=N), 1)
+
+precio_base_m2 = 2_500_000  # COP aprox por m2
+factor = np.array([factor_estrato[e] for e in estrato])
+precio = (area_terreno * precio_base_m2 * factor
+          * (1 - antiguedad * 0.004)
+          * (1 - distancia_centro * 0.01))
+precio = np.round(precio, -3)
+
+df = pd.DataFrame({
+    "estrato": estrato,
+    "area_terreno_m2": area_terreno,
+    "antiguedad_anios": antiguedad,
+    "distancia_centro_km": distancia_centro,
+    "precio_cop": precio,
+})
+
+df.head()
