@@ -1,50 +1,44 @@
-Máquinas de Vectores de Soporte (SVM) — Apuntes
-1. Clasificación lineal con SVM
-Una SVM lineal busca el hiperplano que separa las clases con el mayor margen posible (la mayor distancia entre el hiperplano y los puntos más cercanos de cada clase, llamados vectores de soporte). No basta con separar los datos: se busca la separación "más segura", la que deja el mayor colchón a cada lado.
+Aprendizaje no supervisado: el pastel y el glaseado
 
-2. Margen blando (soft margin) y el hiperparámetro C
-En la práctica los datos casi nunca son perfectamente separables (hay ruido, solapamiento, outliers). El margen blando permite que algunos puntos violen el margen o incluso queden mal clasificados, a cambio de un modelo más generalizable.
+Tu metáfora es buena, la dejo como hilo conductor: si el aprendizaje no supervisado es el pastel (la estructura, la base), el aprendizaje supervisado es el glaseado (el detalle fino que se le pone encima). Aquí va el orden del caos, convertido en algo elegante.
 
-El hiperparámetro C controla ese equilibrio:
+1. ¿Qué es el aprendizaje no supervisado?
 
-C bajo → margen más ancho, se toleran más violaciones → modelo más simple, menos varianza, riesgo de underfitting.
-C alto → margen más estrecho, se penalizan fuerte las violaciones → modelo más ajustado a los datos de entrenamiento, riesgo de overfitting.
-En otras palabras: C regula el compromiso sesgo-varianza (bias-variance tradeoff).
+Le das a la máquina datos sin etiquetas — no le dices "esto es un perro" o "esto es fraude" — y ella tiene que encontrar la estructura por sí sola: identificar y agrupar datos similares según sus características, formando "familias lógicas" sin que nadie le diga cuáles son de antemano.
 
-3. Modelos no lineales
-Cuando los datos no son linealmente separables, una estrategia es transformar el espacio de características para que sí lo sean. El flujo típico es:
+El agrupamiento (clustering) es, de hecho, uno de los motores silenciosos detrás de los buscadores modernos: agrupar documentos o consultas similares para organizar resultados.
 
-Identificar que los datos no son separables linealmente en el espacio original.
-Transformar los datos añadiendo nuevas características (por ejemplo, características polinomiales) para proyectarlos a un espacio de mayor dimensión donde sí sean separables.
-Entrenar el modelo lineal en ese nuevo espacio transformado.
-El problema: añadir características de forma explícita puede ser muy costoso computacionalmente, sobre todo con grados altos o muchas dimensiones.
+2. Agrupamiento y K-means
 
-4. El truco del kernel (kernel trick)
-Es la técnica que resuelve el problema anterior: permite obtener el mismo resultado que si hubiéramos transformado los datos a un espacio de mayor dimensión, pero sin calcular explícitamente esas nuevas características. El kernel calcula directamente el producto escalar entre los datos transformados, ahorrando una enorme cantidad de cómputo. Por eso se suele describir como una técnica "casi milagrosa".
+K-means es el algoritmo clásico: tú le dices cuántos grupos quieres (ej. 5) y el algoritmo va moviendo "centros" hasta que cada punto queda asignado al grupo más cercano.
 
-4.1 Kernel polinomial
-Un SVM con kernel polinomial de grado d (por ejemplo, tercer grado) simula el efecto de haber añadido combinaciones polinomiales de las características originales, sin generarlas realmente. Permite capturar relaciones no lineales de forma eficiente.
+Lo importante no es solo que agrupe, sino qué tan bien agrupa. Para eso existen métricas de evaluación (como el silhouette score) que miden qué tan bien separados y compactos quedan los grupos — no basta con que existan 5 grupos, hay que medir si esos 5 grupos tienen sentido.
 
-4.2 Similitud RBF (Radial Basis Function, Gaussiana)
-En lugar de usar polinomios, esta técnica mide qué tan "parecido" es cada punto a ciertos puntos de referencia (landmarks) usando la función RBF Gaussiana, que decae con la distancia.
+3. Segmentación de imágenes
 
-El parámetro clave aquí es gamma (γ), que funciona como una herramienta de regularización:
+Para una computadora, una imagen son millones de píxeles sueltos, sin significado. La segmentación agrupa esos píxeles en regiones con características similares (color, textura, intensidad), reduciendo el problema de "millones de píxeles individuales" a un puñado de regiones con sentido (cielo, carretera, persona, etc.).
 
-Gamma bajo → la influencia de cada punto se extiende más lejos → frontera de decisión más suave.
-Gamma alto → la influencia de cada punto es muy local → frontera de decisión más irregular, ajustada a cada punto (riesgo de overfitting).
-Gamma y C interactúan: ambos ajustan, desde ángulos distintos, qué tan flexible/irregular es la frontera de decisión final. Gamma controla el rango de influencia de cada punto; C controla cuánto se penalizan las violaciones del margen.
+Aquí aparece el aprendizaje activo: partes de datos crudos con mucha incertidumbre, y en lugar de que la máquina adivine sola, hay una colaboración máquina-humano — el modelo pregunta ("¿esto es A o B?") en los casos donde tiene más duda, y el humano etiqueta esos casos puntuales. Así el modelo aprende más rápido con menos etiquetas.
 
-5. Regresión con SVM (SVR)
-Es un cambio de paradigma respecto a la clasificación: en vez de maximizar el margen entre clases, el objetivo es encajar la mayor cantidad de instancias dentro de una "calle" (el margen), cuyo ancho está determinado por el hiperparámetro epsilon (ε).
+4. Formas complejas (clustering basado en densidad)
 
-Instancias dentro de la calle no penalizan el modelo.
-Se puede aplicar regresión no lineal combinando esta idea con el truco del kernel.
-6. Un poco de la matemática detrás
-El entrenamiento de la SVM busca minimizar la norma del vector de pesos (w), lo cual, matemáticamente, es equivalente a maximizar el margen.
-Los modelos SVM lineales escalan muy bien con el número de instancias y de características.
-Los modelos con kernel dejan de escalar tan bien cuando el número de instancias crece mucho (el costo depende del cálculo de productos escalares entre pares de instancias); es importante conocer esta limitación al elegir el algoritmo.
-En el fondo, todo el cálculo se reduce a operaciones de productos escalares (producto punto) entre vectores, lo cual explica por qué el truco del kernel es tan poderoso: basta con saber calcular ese producto en el espacio transformado, sin construir explícitamente el espacio.
-7. Pregunta para reflexionar
-¿Qué patrones ocultos en los datos no logra ver un modelo lineal, y qué tipo de transformación (o kernel) sería necesaria para revelarlos?
+K-means asume que los grupos son más o menos "redondos". Pero los datos reales tienen formas rarísimas (espirales, lunas, anillos). Algoritmos como DBSCAN resuelven esto identificando zonas de alta densidad de puntos y expandiéndose desde ahí, en vez de forzar una forma geométrica predefinida — así detectan grupos de forma arbitraria con bastante precisión.
 
-Esta pregunta apunta directo al corazón del tema: la elección del kernel (lineal, polinomial, RBF, u otro) es, en esencia, una hipótesis sobre la forma geométrica que tiene la verdadera frontera de decisión de tus datos.
+5. Detección de anomalías
+
+La idea es entrenar al modelo con lo "normal" y hacer que detecte lo que se sale de ese patrón. El ejemplo clásico: le muestras 1000 imágenes de perros, y cuando aparece un gato, el modelo lo "siente raro" porque no encaja en la densidad ni en las características aprendidas del grupo mayoritario.
+
+6. Mezcla de Gaussianas (GMM)
+
+Es un enfoque más matemático y riguroso: en vez de asignar cada punto a un solo grupo de forma dura (como K-means), el modelo asume que los datos provienen de una mezcla de varias distribuciones gaussianas superpuestas, y calcula la probabilidad de que cada punto pertenezca a cada una.
+
+Esto sirve especialmente bien para detectar anomalías: los puntos aislados, donde la densidad de probabilidad es mínima bajo cualquiera de las gaussianas del modelo, son los candidatos a anomalía. Es como una "brújula matemática" que se ajusta de forma completa y precisa a la forma real de los datos, en vez de imponerles una forma rígida.
+
+¿Cómo se desbloquea valor con estos datos?
+
+El valor no está en los datos crudos, sino en la estructura que se les impone:
+
+Agrupamiento → descubre segmentos de clientes, temas, comportamientos que nadie definió de antemano.
+Segmentación → convierte ruido visual en regiones interpretables.
+Aprendizaje activo → maximiza el aprendizaje con el mínimo de etiquetado humano (caro).
+Detección de anomalías / GMM → convierte "lo raro" en una señal accionable (fraude, fallas, outliers).
