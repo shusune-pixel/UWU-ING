@@ -1,0 +1,50 @@
+Máquinas de Vectores de Soporte (SVM) — Apuntes
+1. Clasificación lineal con SVM
+Una SVM lineal busca el hiperplano que separa las clases con el mayor margen posible (la mayor distancia entre el hiperplano y los puntos más cercanos de cada clase, llamados vectores de soporte). No basta con separar los datos: se busca la separación "más segura", la que deja el mayor colchón a cada lado.
+
+2. Margen blando (soft margin) y el hiperparámetro C
+En la práctica los datos casi nunca son perfectamente separables (hay ruido, solapamiento, outliers). El margen blando permite que algunos puntos violen el margen o incluso queden mal clasificados, a cambio de un modelo más generalizable.
+
+El hiperparámetro C controla ese equilibrio:
+
+C bajo → margen más ancho, se toleran más violaciones → modelo más simple, menos varianza, riesgo de underfitting.
+C alto → margen más estrecho, se penalizan fuerte las violaciones → modelo más ajustado a los datos de entrenamiento, riesgo de overfitting.
+En otras palabras: C regula el compromiso sesgo-varianza (bias-variance tradeoff).
+
+3. Modelos no lineales
+Cuando los datos no son linealmente separables, una estrategia es transformar el espacio de características para que sí lo sean. El flujo típico es:
+
+Identificar que los datos no son separables linealmente en el espacio original.
+Transformar los datos añadiendo nuevas características (por ejemplo, características polinomiales) para proyectarlos a un espacio de mayor dimensión donde sí sean separables.
+Entrenar el modelo lineal en ese nuevo espacio transformado.
+El problema: añadir características de forma explícita puede ser muy costoso computacionalmente, sobre todo con grados altos o muchas dimensiones.
+
+4. El truco del kernel (kernel trick)
+Es la técnica que resuelve el problema anterior: permite obtener el mismo resultado que si hubiéramos transformado los datos a un espacio de mayor dimensión, pero sin calcular explícitamente esas nuevas características. El kernel calcula directamente el producto escalar entre los datos transformados, ahorrando una enorme cantidad de cómputo. Por eso se suele describir como una técnica "casi milagrosa".
+
+4.1 Kernel polinomial
+Un SVM con kernel polinomial de grado d (por ejemplo, tercer grado) simula el efecto de haber añadido combinaciones polinomiales de las características originales, sin generarlas realmente. Permite capturar relaciones no lineales de forma eficiente.
+
+4.2 Similitud RBF (Radial Basis Function, Gaussiana)
+En lugar de usar polinomios, esta técnica mide qué tan "parecido" es cada punto a ciertos puntos de referencia (landmarks) usando la función RBF Gaussiana, que decae con la distancia.
+
+El parámetro clave aquí es gamma (γ), que funciona como una herramienta de regularización:
+
+Gamma bajo → la influencia de cada punto se extiende más lejos → frontera de decisión más suave.
+Gamma alto → la influencia de cada punto es muy local → frontera de decisión más irregular, ajustada a cada punto (riesgo de overfitting).
+Gamma y C interactúan: ambos ajustan, desde ángulos distintos, qué tan flexible/irregular es la frontera de decisión final. Gamma controla el rango de influencia de cada punto; C controla cuánto se penalizan las violaciones del margen.
+
+5. Regresión con SVM (SVR)
+Es un cambio de paradigma respecto a la clasificación: en vez de maximizar el margen entre clases, el objetivo es encajar la mayor cantidad de instancias dentro de una "calle" (el margen), cuyo ancho está determinado por el hiperparámetro epsilon (ε).
+
+Instancias dentro de la calle no penalizan el modelo.
+Se puede aplicar regresión no lineal combinando esta idea con el truco del kernel.
+6. Un poco de la matemática detrás
+El entrenamiento de la SVM busca minimizar la norma del vector de pesos (w), lo cual, matemáticamente, es equivalente a maximizar el margen.
+Los modelos SVM lineales escalan muy bien con el número de instancias y de características.
+Los modelos con kernel dejan de escalar tan bien cuando el número de instancias crece mucho (el costo depende del cálculo de productos escalares entre pares de instancias); es importante conocer esta limitación al elegir el algoritmo.
+En el fondo, todo el cálculo se reduce a operaciones de productos escalares (producto punto) entre vectores, lo cual explica por qué el truco del kernel es tan poderoso: basta con saber calcular ese producto en el espacio transformado, sin construir explícitamente el espacio.
+7. Pregunta para reflexionar
+¿Qué patrones ocultos en los datos no logra ver un modelo lineal, y qué tipo de transformación (o kernel) sería necesaria para revelarlos?
+
+Esta pregunta apunta directo al corazón del tema: la elección del kernel (lineal, polinomial, RBF, u otro) es, en esencia, una hipótesis sobre la forma geométrica que tiene la verdadera frontera de decisión de tus datos.
