@@ -1,0 +1,41 @@
+La evolución de la visión por computadora permite transformar arreglos bidimensionales de píxeles numéricos en una comprensión jerárquica e hiperrealista del entorno visual. Este desarrollo se estructura a través de los seis ejes clave:
+
+1. Inspiración Biológica
+
+El origen de las Redes Neuronales Convolucionales (CNN) se remonta a los experimentos de Hubel y Wiesel en la corteza visual de los gatos. Descubrieron que las neuronas individuales no responden a toda la escena visual de forma simultánea, sino a regiones delimitadas denominadas campos receptivos locales. Neuronas simples detectan bordes u orientaciones específicas, mientras que neuronas complejas combinan estas respuestas para procesar patrones más elaborados.
+
+2. Capas y Filtros
+
+Para emular este procesamiento biológico, las capas convolucionales emplean pequeños arreglos numéricos llamados filtros o kernels.
+
+Operación de Convolución: El filtro se desplaza sobre la imagen aplicando un producto punto en cada posición para extraer características claves (bordes, texturas o formas).
+
+Zancada (Stride) y Relleno (Padding): La zancada define el paso con el que se desplaza el filtro (regulando la resolución espacial de salida), mientras que el padding añade bordes para evitar la pérdida acelerada de dimensionalidad en los márgenes de la imagen.
+
+Mapas Tridimensionales: Cuando se procesan imágenes a color (canales RGB) o mapas de características intermedios, los filtros operan en 3D (alto, ancho y profundidad/canales) para generar volúmenes de características enriquecidos.
+
+3. Agrupación (Pooling)
+
+Las capas de agrupación o pooling (como Max Pooling o Average Pooling) reducen la dimensión espacial de los mapas de características. Esto disminuye el volumen de datos, reduce la carga computacional y proporciona cierta invarianza a pequeñas translaciones o deformaciones de los objetos dentro de la imagen.
+
+4. Arquitecturas Famosas
+
+A lo largo de los años, se han diseñado redes convolucionales emblemáticas que sentaron las bases del área:
+
+LeNet-5: La pionera en clasificación de dígitos manuscritos.
+
+AlexNet: Rompió récords en ImageNet introduciendo el uso intensivo de GPUs y ReLU.
+
+VGGNet y ResNet: VGG destacó por la simplicidad de sus filtros de 3x3, mientras que ResNet introdujo las conexiones residuales o saltos para entrenar redes extremadamente profundas sin sufrir el problema de desvanecimiento del gradiente.
+
+5. Modelos Preentrenados y Aprendizaje por Transferencia
+
+En la práctica profesional prácticamente nadie entrena un modelo desde cero debido a los altos costos computacionales y de recolección de datos. Mediante el aprendizaje por transferencia (transfer learning), se aprovechan los pesos de un modelo preentrenado en un conjunto masivo (como ImageNet) —donde las primeras capas ya saben detectar bordes, curvas y texturas— y únicamente se ajustan (fine-tuning) las últimas capas para la tarea específica deseada.
+
+6. Detección de Objetos y Segmentación
+
+El nivel más avanzado trasciende la clasificación simple para mapear la ubicación física de los objetos en tiempo real:
+
+YOLO (You Only Look Once): Modela la detección como un único problema de regresión, dividiendo la imagen en una rejilla para predecir cajas delimitadoras (bounding boxes) y clases simultáneamente a velocidades aptas para video en tiempo real.
+
+Mask R-CNN: Extiende las redes de detección por regiones para realizar segmentación de instancias, no solo delimitando con rectángulos los objetos, sino delimitando la máscara exacta de píxeles a la que pertenece cada elemento en la escena.
