@@ -1,0 +1,17 @@
+Analogía: el rompecabezas como entrenamiento de una red neuronal
+
+Día 1 — Empieza el aprendizaje
+
+Nos dan un rompecabezas y, como redes neuronales, lo armamos entre todas. Es la primera pasada de ajuste: las neuronas apenas están calibrando cómo encajan las piezas.
+
+Días siguientes — Repetición con más complejidad
+
+Cada día nos traen un rompecabezas nuevo, cada vez más grande (por ejemplo, uno de 1000 piezas). Lo volvemos a armar entre todas las neuronas, coordinándonos. Este proceso se repite durante dos años: es el entrenamiento — muchas iteraciones, muchos ejemplos, ajuste constante.
+
+Resultado del entrenamiento
+
+Con la repetición, las neuronas aprendemos el patrón general de "cómo se arma un rompecabezas" — no memorizamos una imagen en particular, sino la habilidad de coordinarnos para resolver el problema. Ese conocimiento queda guardado ("las piezas las dejamos en la mitad" → los pesos ya ajustados quedan listos para usarse).
+
+Prueba con un caso nuevo
+
+Ahora nos dan un rompecabezas nunca antes visto — el de la Universidad de Colombia. Una neurona coordina a las demás y, usando lo aprendido, lo armamos igual. Esta es la fase de prueba: aplicamos lo aprendido a un dato nuevo que la red no vio durante el entrenamiento.
